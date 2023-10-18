@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const { ObjectId } = require('mongodb');
 const port = process.env.PORT || 5003;
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
@@ -73,10 +74,24 @@ async function run() {
             }
         });
 
+        app.get('/productCardDetails/:id', async (req, res) => {
+            try {
+                let id = req.params.id
+
+                const query = { _id: new ObjectId(id) }
+                const result = await productCollection.findOne(query);
+                res.json(result); 
+                console.log(result);
+            } catch (error) {
+                console.error(error);
+                res.status(500).json({ error: "Internal Server Error" });
+            }
+        });
 
 
 
 
+        
 
 
         // Send a ping to confirm a successful connection
