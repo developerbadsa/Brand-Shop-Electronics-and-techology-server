@@ -49,19 +49,6 @@ async function run() {
         })
 
 
-        // app.post('/cart', async (req, res) => {
-        //     try {
-        //         const productDetails = req.body;
-        //         const result = await cartCollection.insertOne(productDetails);
-        //         console.log(result);
-        //         res.send(result)
-        //     } catch (error) {
-        //         console.error(error);
-        //         res.status(500).json({ error: "Internal Server Error" });
-        //     }
-        // });
-
-
 
         app.get('/product/:brand', async (req, res) => {
             try {
@@ -95,7 +82,7 @@ async function run() {
         app.post('/cart', async (req, res) => {
             try {
                 const cartDetails = req.body;
-                const result = await cartCollection.insertOne(cartDetails);
+                const result = await productCollection.insertOne(cartDetails);
                 res.send(result)
             } catch (error) {
                 console.error(error);
@@ -121,15 +108,37 @@ async function run() {
         app.delete("/cart/:_id", async (req, res) => {
             const id = req.params._id;
 
-            const query = {_id:new ObjectId(id)}
+            const query = { _id: new ObjectId(id) }
             const result = await cartCollection.deleteOne(query);
             console.log(query);
             res.send(result)
-        
-          
+
+
         });
-        
-        
+
+
+        app.get("/cart/:id", async (req, res) => {
+
+            const id = req.params.id;
+
+            const query = { _id: id }
+            const result = await cartCollection.findOne(query);
+            console.log(query);
+            res.send(result)
+
+
+        })
+
+        app.put("/updateProduct/:id", (req, res) => {
+            const getid = req.params.id
+            const updatedData = req.body;
+
+            console.log(getid, updatedData);
+            //    const productData = { ...productData, ...updatedData };
+            // res.json({ message: "Product updated successfully", data: productData });
+        });
+
+
 
 
 
