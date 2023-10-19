@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const bodyParser = require('body-parser');
 const { ObjectId } = require('mongodb');
 const port = process.env.PORT || 5003;
 
@@ -10,6 +11,7 @@ const uri = "mongodb+srv://rahimbadsa723:Ofqat5fdGeCj9PDc@cluster0.r2ad8dg.mongo
 // middleware
 app.use(cors());
 app.use(express.json());
+app.use(bodyParser.json());
 
 
 
@@ -31,7 +33,6 @@ async function run() {
         const brandCollection = client.db('brandNameDB').collection('brandNameDBCollection');
         const productCollection = client.db('productDB').collection('productDBCollection');
         const cartCollection = client.db('cartDB').collection('cartDBCollection');
-        const cartsCollection = client.db('cartDB').collection('cartDBCollection');
 
 
 
@@ -48,17 +49,17 @@ async function run() {
         })
 
 
-        app.post('/product', async (req, res) => {
-            try {
-                const productDetails = req.body;
-                const result = await productCollection.insertOne(productDetails);
-                console.log(productDetails);
-                res.json({ message: "Product added successfully" });
-            } catch (error) {
-                console.error(error);
-                res.status(500).json({ error: "Internal Server Error" });
-            }
-        });
+        // app.post('/cart', async (req, res) => {
+        //     try {
+        //         const productDetails = req.body;
+        //         const result = await cartCollection.insertOne(productDetails);
+        //         console.log(result);
+        //         res.send(result)
+        //     } catch (error) {
+        //         console.error(error);
+        //         res.status(500).json({ error: "Internal Server Error" });
+        //     }
+        // });
 
 
 
@@ -115,25 +116,17 @@ async function run() {
             }
         })
 
-        app.delete("/cart/:id", async (req, res) => {
-            const id = req.params.id;
-            const query = {_id: new ObjectId(id) }
+
+        //delete card data
+        app.delete("/cart/:_id", async (req, res) => {
+            const id = req.params._id;
+
+            const query = {_id:new ObjectId(id)}
+            const result = await cartCollection.deleteOne(query);
+            console.log(query);
+            res.send(result)
         
-            try {
-                const result = await cartsCollection.deleteOne(query);
-                console.log(result);
-        
-                if (result.deletedCount === 1) {
-                    // Document was successfully deleted
-                    res.status(204).send(); // 204 No Content
-                } else {
-                    // Document with the specified ID was not found
-                    res.status(404).json({ error: "Document not found" });
-                }
-            } catch (error) {
-                console.error(error);
-                res.status(500).json({ error: "Internal Server Error" });
-            }
+          
         });
         
         
