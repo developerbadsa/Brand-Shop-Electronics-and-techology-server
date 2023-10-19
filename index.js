@@ -27,6 +27,7 @@ async function run() {
         await client.connect();
         const brandCollection = client.db('brandNameDB').collection('brandNameDBCollection');
         const productCollection = client.db('productDB').collection('productDBCollection');
+        const cartCollection = client.db('cartDB').collection('cartDBCollection');
 
 
 
@@ -67,7 +68,7 @@ async function run() {
                 const products = await cursor.toArray();
                 console.log("Products:", products);
 
-                res.json(products); 
+                res.json(products);
             } catch (error) {
                 console.error(error);
                 res.status(500).json({ error: "Internal Server Error" });
@@ -80,9 +81,54 @@ async function run() {
 
                 const query = { _id: new ObjectId(id) }
                 const result = await productCollection.findOne(query);
-                res.json(result); 
-                console.log(result);
+                res.json(result);
             } catch (error) {
+                console.error(error);
+                res.status(500).json({ error: "Internal Server Error" });
+            }
+        });
+        app.post('/cart', async (req, res) => {
+            try {
+                const cartDetails = req.body;
+                const result = await cartCollection.insertOne(cartDetails);
+                console.log(cartDetails);
+                res.send(result)
+            } catch (error) {
+                console.error(error);
+                res.status(500).json({ error: "Internal Server Error" });
+            }
+        });
+
+
+        app.get('/cart', async (req, res) => {
+            try {
+                const cursor = cartCollection.find();
+                const cart = await cursor.toArray();
+
+                res.json(cart); // Send the retrieved data as a JSON response
+            } catch (error) {
+                console.error(error);
+                res.status(500).json({ error: "Internal Server Error" });
+            }
+        })
+
+        app.delete("/cart/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id:new ObjectId(id) }
+            console.log(id);
+
+            try {
+                const result = await cartCollection.deleteOne(query);
+
+                if (result.deletedCount === 1) {
+                    // Document was successfully deleted
+                    res.status(204).send(); // 204 No Content
+                } else {
+                    // Document with the specified ID was not found
+                    res.status(404).json({ error: "Document not found" });
+                }
+            } catch (error) {
+                // Handle errors, e.g., database connection issues
                 console.error(error);
                 res.status(500).json({ error: "Internal Server Error" });
             }
@@ -91,7 +137,13 @@ async function run() {
 
 
 
-        
+
+
+
+
+
+
+
 
 
         // Send a ping to confirm a successful connection
