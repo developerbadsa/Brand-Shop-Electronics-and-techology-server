@@ -11,6 +11,9 @@ const uri = "mongodb+srv://rahimbadsa723:Ofqat5fdGeCj9PDc@cluster0.r2ad8dg.mongo
 app.use(cors());
 app.use(express.json());
 
+
+
+
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
     serverApi: {
@@ -28,6 +31,7 @@ async function run() {
         const brandCollection = client.db('brandNameDB').collection('brandNameDBCollection');
         const productCollection = client.db('productDB').collection('productDBCollection');
         const cartCollection = client.db('cartDB').collection('cartDBCollection');
+        const cartsCollection = client.db('cartDB').collection('cartDBCollection');
 
 
 
@@ -91,7 +95,6 @@ async function run() {
             try {
                 const cartDetails = req.body;
                 const result = await cartCollection.insertOne(cartDetails);
-                console.log(cartDetails);
                 res.send(result)
             } catch (error) {
                 console.error(error);
@@ -114,12 +117,12 @@ async function run() {
 
         app.delete("/cart/:id", async (req, res) => {
             const id = req.params.id;
-            const query = { _id:new ObjectId(id) }
-            console.log(id);
-
+            const query = {_id: new ObjectId(id) }
+        
             try {
-                const result = await cartCollection.deleteOne(query);
-
+                const result = await cartsCollection.deleteOne(query);
+                console.log(result);
+        
                 if (result.deletedCount === 1) {
                     // Document was successfully deleted
                     res.status(204).send(); // 204 No Content
@@ -128,11 +131,12 @@ async function run() {
                     res.status(404).json({ error: "Document not found" });
                 }
             } catch (error) {
-                // Handle errors, e.g., database connection issues
                 console.error(error);
                 res.status(500).json({ error: "Internal Server Error" });
             }
         });
+        
+        
 
 
 
