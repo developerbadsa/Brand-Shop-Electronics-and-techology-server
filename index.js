@@ -41,7 +41,7 @@ async function run() {
                 const cursor = brandCollection.find();
                 const brands = await cursor.toArray();
 
-                res.json(brands); // Send the retrieved data as a JSON response
+                res.json(brands); 
             } catch (error) {
                 console.error(error);
                 res.status(500).json({ error: "Internal Server Error" });
@@ -54,11 +54,9 @@ async function run() {
             try {
                 let brandName = req.params.brand.trim();
 
-                //making case-insensitive regular expression to find products
                 const cursor = productCollection.find({ brand: { $regex: new RegExp(brandName, 'i') } });
 
                 const products = await cursor.toArray();
-                console.log("Products:", products);
 
                 res.json(products);
             } catch (error) {
@@ -128,27 +126,42 @@ async function run() {
         });
 
 
-        app.get("/cart/:id", async (req, res) => {
+        app.get("/updateProduct/:id", async (req, res) => {
 
             const id = req.params.id;
 
             const query = { _id: id }
-            const result = await cartCollection.findOne(query);
+            const result = await productCollection.findOne(query);
             res.send(result)
 
 
         })
 
-        app.put("/updateProduct/:id", (req, res) => {
-            const {_id} = req.params.id
-            const updatedData = req.body;
 
-            console.log(_id, updatedData);
-            res.send(updatedData)
-            //    const productData = { ...productData, ...updatedData };
-            // res.json({ message: "Product updated successfully", data: productData });
+        app.put("/updateProduct1/:id", async (req, res) => {
+            const id = req.params.id; 
+            console.log("Received update request for product with ID:", id);
+        
+            try {
+                const query = { _id: id};
+                const updatedData = req.body;
+                console.log("Received update data:", updatedData);
+        
+                const result = await productCollection.updateOne(query, { $set: updatedData });
+                console.log("Update result:", result);
+        
+                if (result.modifiedCount === 1) {
+                    res.json({ message: "Product updated successfully" });
+                } else {
+                    res.status(404).json({ message: "Product not found" });
+                }
+            } catch (error) {
+                res.status(500).json({ error: "Internal Server Error" });
+            }
         });
-
+        
+        
+        
 
 
 
