@@ -79,9 +79,12 @@ async function run() {
         });
 
         app.post('/subscribe', async (req, res) => {
+
+           
             try {
                 const email = req.body;
                 const result = await Subscriber.insertOne(email);
+
                 res.send(result)
             } catch (error){
                 console.error(error);
