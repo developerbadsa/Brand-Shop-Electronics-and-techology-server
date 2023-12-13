@@ -33,6 +33,7 @@ async function run() {
         const brandCollection = client.db('brandNameDB').collection('brandNameDBCollection');
         const productCollection = client.db('productDB').collection('productDBCollection');
         const cartCollection = client.db('cartDB').collection('cartDBCollection');
+        const Subscriber = client.db('SubscriberDB').collection('SubscriberCollection');
 
 
 
@@ -72,6 +73,17 @@ async function run() {
                 const result = await productCollection.insertOne(ProductData);
                 res.send(result)
             } catch (error) {
+                console.error(error);
+                res.status(500).json({ error: "Internal Server Error" });
+            }
+        });
+
+        app.post('/subscribe', async (req, res) => {
+            try {
+                const email = req.body;
+                const result = await Subscriber.insertOne(email);
+                res.send(result)
+            } catch (error){
                 console.error(error);
                 res.status(500).json({ error: "Internal Server Error" });
             }
