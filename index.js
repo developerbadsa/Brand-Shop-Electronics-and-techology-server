@@ -200,7 +200,7 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res)=>{
-    res.send('running server')
+    res.send('running server now with sub')
 })
 
 app.listen(port, () => {
